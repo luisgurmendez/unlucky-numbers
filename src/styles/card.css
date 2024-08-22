@@ -1,0 +1,32 @@
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.card.selected {
+    --pixelated-border-image: var(--pixelated-border-image-selected);
+    transform: translateY(0px);
+}
+
+.number-card {
+    width: 156px;
+    height: 156px;
+}
+
+.card {
+    background: #FFF;
+    transition: transform 200ms cubic-bezier(.3, .7, .4, 1);
+    cursor: pointer;
+}
+
+.card-element {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    user-select: none;
+}

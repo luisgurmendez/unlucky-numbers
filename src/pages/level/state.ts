@@ -65,6 +65,11 @@ class LevelState {
         this.selectedOperator = null;
         this.notify();
     }
+
+    hasWon() {
+        return this.numbers.length === 1 && this.numbers[0] === this.target;
+    }
+
 }
 
 export default LevelState;

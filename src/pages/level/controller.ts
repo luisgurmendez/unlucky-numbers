@@ -32,7 +32,6 @@ class LevelController {
     selectNumber = (index: number) => {
         const state = this.currentState;
         console.log('selectNumber')
-        createConfettiExpltionCanvas()
         if (this.isReadyToEvaluateExpression() && state.selectedNumberIndex !== index) {
             const expression = this.buildExpression(state.numbers[state.selectedNumberIndex!], state.numbers[index], state.selectedOperator!);
             console.log(expression);
@@ -48,7 +47,15 @@ class LevelController {
             state.setNumbers(numbersAfterOperation);
             state.deselectNumber();
             state.deselectOperator();
-            SoundEffectController.pop();
+            if (state.hasWon()) {
+                setTimeout(() => {
+                    createConfettiExpltionCanvas()
+                    SoundEffectController.end();
+                }, 50)
+
+            } else {
+                SoundEffectController.pop();
+            }
         } else {
             if (state.selectedNumberIndex === index) {
                 state.deselectNumber();
@@ -59,6 +66,10 @@ class LevelController {
                 SoundEffectController.select();
             }
         }
+    }
+
+    hasWon = () => {
+        return this.currentState.numbers.length === 1 && this.currentState.numbers[0] === 13;
     }
 
     private isReadyToEvaluateExpression = (): boolean => {

@@ -6,7 +6,7 @@ export function isExpression(expression: Expression): expression is string {
 }
 
 
-function gcd(a: number, b: number) {
+function gcd(a: number, b: number): number {
     if (!b) {
         return a;
     }
@@ -45,4 +45,8 @@ export function simplifyExpression(expression: Expression): Expression {
     } catch (e) {
         return "Invalid expression";
     }
+}
+
+export function randomNumberFromInterval(min: number, max: number) { // min and max included 
+    return Math.random() * (max - min) + min;
 }
