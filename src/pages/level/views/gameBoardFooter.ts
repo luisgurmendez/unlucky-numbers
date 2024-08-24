@@ -1,8 +1,15 @@
-import undoPixelArt from "../pixel-icons/undo";
-import redoPixelArt from "../pixel-icons/redo";
-import { IconButton } from "./iconButton";
+import undoPixelArt from "@/pixel-art/undo";
+import redoPixelArt from "@/pixel-art/redo";
+import soundPixelArt from "@/pixel-art/sound";
+import soundMutePixelArt from "@/pixel-art/sound_mute";
+import nextPixelArt from "@/pixel-art/next";
+// import { IconButton } from "./iconButton";
 import { WebComponentsPropsParserHelper } from "@/core/webComponents";
 import LevelController from "../controller";
+import PixelArtIconButton from "@/ui/pixelArtIconButton";
+import showModal from "@/ui/modal";
+import MenuModal from "./menuModal";
+import SoundButton from "./soundButton";
 
 class GameBoardFooterView extends HTMLElement {
 
@@ -48,8 +55,7 @@ class GameBoardFooterView extends HTMLElement {
     }
 
     render() {
-        const footer = Footer(this.isUndoDisabled, this.isRedoDisabled);
-
+        const footer = Footer(this.isUndoDisabled, this.isRedoDisabled, this.controller);
         this.innerHTML = ``;
         this.appendChild(footer);
         this.attachEventListeners();
@@ -59,23 +65,32 @@ class GameBoardFooterView extends HTMLElement {
 export default GameBoardFooterView;
 
 function UndoButton(disabled: boolean) {
-    const undoButton = IconButton(undoPixelArt, disabled);
+    const undoButton = PixelArtIconButton(undoPixelArt, { disabled });
     undoButton.id = 'undo-button';
     return undoButton;
 }
 
 function RedoButton(disabled: boolean) {
-    const redoButton = IconButton(redoPixelArt, disabled);
+    const redoButton = PixelArtIconButton(redoPixelArt, { disabled });
     redoButton.id = 'redo-button';
     return redoButton;
 }
 
-export function Footer(isUndoDisabled: boolean, isRedoDisabled: boolean) {
+export function Footer(isUndoDisabled: boolean, isRedoDisabled: boolean, controller?: LevelController) {
     const gameBoardFooter = document.createElement('div');
     gameBoardFooter.id = 'game-board-footer';
     const redoIcon = RedoButton(isRedoDisabled);
     const undoIcon = UndoButton(isUndoDisabled);
+
+    const next = PixelArtIconButton(nextPixelArt, { onClick: controller?.nextLevel })
+
+    gameBoardFooter.appendChild(next);
     gameBoardFooter.appendChild(redoIcon);
     gameBoardFooter.appendChild(undoIcon);
+    const soundButton = document.createElement('sound-button');
+    gameBoardFooter.appendChild(soundButton);
+
     return gameBoardFooter;
 }
+
+customElements.define('sound-button', SoundButton);

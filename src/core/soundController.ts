@@ -1,7 +1,12 @@
 import { wait } from "@/utils";
 
-
 type SoundEffect = (i: number) => number;
+
+declare global {
+    var isSoundEnabled: boolean;
+}
+
+globalThis.isSoundEnabled = true;
 
 class SoundEffectController {
 
@@ -46,7 +51,16 @@ class SoundEffectController {
         this.playEffect(i => Math.sin(i / 16) * Math.exp(-i / 300) * (1 - i / 3000));
     }
 
+    static setGlobalSoundEnabledState(isEnabled: boolean) {
+        globalThis.isSoundEnabled = isEnabled;
+    }
+
+    static getGlobalSoundEnabledState(): boolean {
+        return globalThis.isSoundEnabled;
+    }
+
     private static playEffect(effect: SoundEffect) {
+        if (!globalThis.isSoundEnabled) return;
         const context = new AudioContext()
         const buffer = context.createBuffer(1, 96e3, 48e3)
         const channel = buffer.getChannelData(0)

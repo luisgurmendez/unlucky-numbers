@@ -1,7 +1,8 @@
 import { Expression, simplifyExpression } from "@/core/math";
 import { WebComponentsPropsParserHelper } from "@/core/webComponents";
-import GameBoardFooterView, { Footer } from "./gameBoardFooter";
+import GameBoardFooterView from "./gameBoardFooter";
 import LevelController from "../controller";
+import Card from "@/ui/card";
 
 
 class GameBoardView extends HTMLElement {
@@ -36,16 +37,6 @@ class GameBoardView extends HTMLElement {
             const cardNumber = e.getAttribute("data-number-index");
             this.controller?.selectNumber(Number(cardNumber));
         }));
-
-        const undoButton = document.getElementById('undo-button');
-        undoButton?.addEventListener('click', () => {
-            this.controller?.undo();
-        });
-
-        const redoButton = document.getElementById('redo-button');
-        redoButton?.addEventListener('click', () => {
-            this.controller?.redo();
-        });
     }
 
     attributeChangedCallback() {
@@ -66,22 +57,9 @@ class GameBoardView extends HTMLElement {
         gameBoardContent.id = 'game-board-content';
 
         if (this.hasWon) {
-            const confettWrapper = document.createElement('div');
-            confettWrapper.id = 'confetti-wrapper';
-            const confettiCanvas = document.createElement('canvas');
-            confettiCanvas.id = 'confetti-canvas';
 
-            const positionedCard = document.createElement('div');
-            positionedCard.style.position = 'absolute';
-            positionedCard.style.top = '50%';
-            positionedCard.style.left = '50%';
-            positionedCard.style.transform = 'translate(-50%, -50%)';
-
-            confettWrapper.appendChild(confettiCanvas);
-            const card = Card(13, 0, false);
-            positionedCard.appendChild(card);
-            gameBoardContent.appendChild(confettWrapper);
-            gameBoardContent.appendChild(positionedCard);
+            gameBoardContent.appendChild(Confetti());
+            gameBoardContent.appendChild(WinCard());
             gameBoard.appendChild(gameBoardContent);
 
             const footerTemplate = document.createElement('template');
@@ -90,7 +68,10 @@ class GameBoardView extends HTMLElement {
 
         } else {
             const cards = this.numbers.map((number, index) => {
-                return Card(number, index, this.selectedNumberIndex === index);
+                return Card(number.toString(), {
+                    className: `number-card ${this.selectedNumberIndex === index ? 'selected' : ''}`,
+                    attributes: { 'data-number-index': index.toString() }
+                });
             });
             cards.forEach((card) => {
                 gameBoardContent.appendChild(card);
@@ -114,14 +95,28 @@ export default GameBoardView;
 customElements.define('game-board', GameBoardView);
 customElements.define('game-board-footer', GameBoardFooterView);
 
-function Card(expression: Expression, index: number, selected: boolean): HTMLDivElement {
-    const card = document.createElement('div');
-    card.className = `number-card card pixelated-border ${selected ? 'selected' : ''}`;
-    card.setAttribute('data-number-index', index.toString());
-    card.innerHTML = `
-            <div class="card-element">
-                ${simplifyExpression(expression)}
-            </div>
-        `;
-    return card;
+
+function WinCard(): HTMLElement {
+    const positionedCard = document.createElement('div');
+    positionedCard.style.position = 'absolute';
+    positionedCard.style.top = '50%';
+    positionedCard.style.left = '50%';
+    positionedCard.style.transform = 'translate(-50%, -50%)';
+
+    const card = Card('13', {
+        className: `number-card`,
+        attributes: { 'data-number-index': '0' }
+    });
+    positionedCard.appendChild(card);
+    return positionedCard;
+}
+
+
+function Confetti(): HTMLDivElement {
+    const confettWrapper = document.createElement('div');
+    confettWrapper.id = 'confetti-wrapper';
+    const confettiCanvas = document.createElement('canvas');
+    confettiCanvas.id = 'confetti-canvas';
+    confettWrapper.appendChild(confettiCanvas);
+    return confettWrapper
 }

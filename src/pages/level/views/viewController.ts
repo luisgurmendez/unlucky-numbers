@@ -1,6 +1,7 @@
 import LevelController from "../controller";
 import LevelState from "../state";
 import GameBoardView from "./gameBoard";
+import GameBoardFooterView from "./gameBoardFooter";
 import GameSidebarView from "./gameSidebar";
 
 class LevelViewController {
@@ -17,6 +18,7 @@ class LevelViewController {
 
     bindController(controller: LevelController) {
         Object.assign(GameBoardView.prototype, { controller });
+        Object.assign(GameBoardFooterView.prototype, { controller });
         Object.assign(GameSidebarView.prototype, { controller });
     }
 

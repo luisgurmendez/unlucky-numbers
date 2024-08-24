@@ -1,9 +1,9 @@
 .pixel-button {
-    --btn-bg: black;
-    --btn-bg-hover: #111;
-    --btn-bg-active: #222;
-    --btn-text: white;
-    --btn-bg-push: #333;
+    --btn-bg: #fff;
+    --btn-bg-hover: #eee;
+    --btn-bg-active: #ddd;
+    --btn-text: black;
+    --btn-bg-push: #ccc;
 }
 
 /* Button */
@@ -53,8 +53,7 @@
     background: var(--btn-bg-push);
     border: none;
     padding: 0;
-    margin-left: 10px;
-    margin-top: 6px;
+    margin-top: 8px;
     cursor: pointer;
     position: relative;
 }

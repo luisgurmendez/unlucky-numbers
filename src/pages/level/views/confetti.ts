@@ -1,9 +1,11 @@
 import PixelArtBuilder from "@/core/PixelArtBuilder";
-import { getRandomConfettiPixelArt } from "../pixel-icons/confettis";
+import { getRandomConfettiPixelArt } from "@/pixel-art/confettis";
 import { randomNumberFromInterval } from "@/core/math";
 
 
 function createConfettiExpltionCanvas() {
+    let timeout = 3000;
+    let startTime = performance.now();
     function getCanvas() {
         const canvas = document.getElementById('confetti-canvas') as HTMLCanvasElement;
         return canvas;
@@ -35,7 +37,12 @@ function createConfettiExpltionCanvas() {
             confetti.update();
             confetti.draw();
         });
-        requestAnimationFrame(animate);
+
+        timeout -= performance.now() - startTime;
+        startTime = performance.now();
+        if (timeout > 0) {
+            requestAnimationFrame(animate);
+        }
     }
 
     createConfetti();
