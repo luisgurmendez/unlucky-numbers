@@ -21,6 +21,14 @@ class SoundEffectController {
             0.4 * Math.sin(i * 0.14) * Math.exp(-i / 200) * (1 - i / 3000)  // Slightly higher frequency for texture
         ));
     }
+
+    /**
+    * @nocollapse;
+    */
+    static unselect() {
+        this.playEffect(i => Math.sin(i / 22) * Math.exp(-i / 300) * (1 - i / 3000));
+    }
+
     /**
     * @nocollapse;
     */

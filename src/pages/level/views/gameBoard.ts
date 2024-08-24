@@ -1,7 +1,6 @@
-import PixelArtBuilder from "@/core/PixelArtBuilder";
 import { Expression, simplifyExpression } from "@/core/math";
 import { WebComponentsPropsParserHelper } from "@/core/webComponents";
-import { buildUndoButton } from "./gameBoardFooter";
+import GameBoardFooterView, { Footer } from "./gameBoardFooter";
 import LevelController from "../controller";
 
 
@@ -37,29 +36,25 @@ class GameBoardView extends HTMLElement {
             const cardNumber = e.getAttribute("data-number-index");
             this.controller?.selectNumber(Number(cardNumber));
         }));
+
+        const undoButton = document.getElementById('undo-button');
+        undoButton?.addEventListener('click', () => {
+            this.controller?.undo();
+        });
+
+        const redoButton = document.getElementById('redo-button');
+        redoButton?.addEventListener('click', () => {
+            this.controller?.redo();
+        });
     }
 
     attributeChangedCallback() {
         this.setLocalAttributes();
         this.render();
-        console.log(this.controller)
     }
 
     static get observedAttributes(): string[] {
         return ['numbers', 'selected-number-index', 'has-won'];
-    }
-
-
-    private buildCard = (expression: Expression, index: number): HTMLDivElement => {
-        const card = document.createElement('div');
-        card.className = `number-card card pixelated-border ${this.selectedNumberIndex === index ? 'selected' : ''}`;
-        card.setAttribute('data-number-index', index.toString());
-        card.innerHTML = `
-                <div class="card-element">
-                    ${simplifyExpression(expression)}
-                </div>
-            `;
-        return card;
     }
 
     render() {
@@ -83,32 +78,28 @@ class GameBoardView extends HTMLElement {
             positionedCard.style.transform = 'translate(-50%, -50%)';
 
             confettWrapper.appendChild(confettiCanvas);
-            const card = this.buildCard('13', 0);
+            const card = Card(13, 0, false);
             positionedCard.appendChild(card);
             gameBoardContent.appendChild(confettWrapper);
             gameBoardContent.appendChild(positionedCard);
             gameBoard.appendChild(gameBoardContent);
 
-            const gameBoardFooter = document.createElement('div');
-            gameBoardFooter.id = 'game-board-footer';
-            const undoIcon = buildUndoButton();
-            gameBoardFooter.appendChild(undoIcon);
-            gameBoard.appendChild(gameBoardFooter);
+            const footerTemplate = document.createElement('template');
+            footerTemplate.innerHTML = `<game-board-footer is-undo-disabled="true" is-redo-disabled="true"></game-board-footer>`;
+            gameBoard.appendChild(footerTemplate.content.childNodes[0]);
 
         } else {
-            const gameBoardFooter = document.createElement('div');
-            gameBoardFooter.id = 'game-board-footer';
-            const undoIcon = buildUndoButton();
-            gameBoardFooter.appendChild(undoIcon);
-
-            const cards = this.numbers.map(this.buildCard);
-
+            const cards = this.numbers.map((number, index) => {
+                return Card(number, index, this.selectedNumberIndex === index);
+            });
             cards.forEach((card) => {
                 gameBoardContent.appendChild(card);
             });
 
+            const footerTemplate = document.createElement('template');
+            footerTemplate.innerHTML = `<game-board-footer is-undo-disabled="${!this.controller?.history.canUndo()}" is-redo-disabled="${!this.controller?.history.canRedo()}"></game-board-footer>`;
             gameBoard.appendChild(gameBoardContent);
-            gameBoard.appendChild(gameBoardFooter);
+            gameBoard.appendChild(footerTemplate.content.childNodes[0]);
         }
 
         this.innerHTML = ``;
@@ -119,3 +110,18 @@ class GameBoardView extends HTMLElement {
 
 
 export default GameBoardView;
+
+customElements.define('game-board', GameBoardView);
+customElements.define('game-board-footer', GameBoardFooterView);
+
+function Card(expression: Expression, index: number, selected: boolean): HTMLDivElement {
+    const card = document.createElement('div');
+    card.className = `number-card card pixelated-border ${selected ? 'selected' : ''}`;
+    card.setAttribute('data-number-index', index.toString());
+    card.innerHTML = `
+            <div class="card-element">
+                ${simplifyExpression(expression)}
+            </div>
+        `;
+    return card;
+}

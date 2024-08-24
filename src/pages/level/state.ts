@@ -24,7 +24,6 @@ class LevelState {
         this.observers = this.observers.filter(obs => obs !== observer);
     }
 
-
     notify = debounce(this.undebouncedNotify, 10);
 
     undebouncedNotify() {
@@ -70,9 +69,40 @@ class LevelState {
         return this.numbers.length === 1 && this.numbers[0] === this.target;
     }
 
+    setState(state: ShallowState) {
+        this.numbers = state.numbers;
+        this.target = state.target;
+        this.selectedNumberIndex = null;
+        this.selectedOperator = null;
+        this.hasStarted = state.hasStarted;
+        this.startCountdown = state.startCountdown;
+        this.notify();
+    }
+
+    get shallowState(): ShallowState {
+        return {
+            numbers: this.numbers,
+            target: this.target,
+            selectedNumberIndex: this.selectedNumberIndex,
+            selectedOperator: this.selectedOperator,
+            hasStarted: this.hasStarted,
+            startCountdown: this.startCountdown
+        };
+    }
+
 }
 
 export default LevelState;
+
+
+export interface ShallowState {
+    numbers: (number | string)[];
+    target: number;
+    selectedNumberIndex: number | null;
+    selectedOperator: Operators | null;
+    hasStarted: boolean;
+    startCountdown: number;
+}
 
 
 function debounce<T extends Function>(fn: T, delay: number): T {

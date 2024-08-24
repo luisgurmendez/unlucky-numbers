@@ -1,11 +1,7 @@
-import PixelArtBuilder from "@/core/PixelArtBuilder";
-import LevelController from "./controller";
-import LevelState from "./state";
-import undoPixelArt from "./pixel-icons/undo";
-import { Operators } from "@/utils";
-import { WebComponentsPropsParserHelper } from "@/core/webComponents";
-import GameBoardView from "./views/gameBoard";
-import GameSidebarView from "./views/gameSidebar";
+import LevelController from "../controller";
+import LevelState from "../state";
+import GameBoardView from "./gameBoard";
+import GameSidebarView from "./gameSidebar";
 
 class LevelViewController {
 
@@ -28,6 +24,4 @@ class LevelViewController {
 
 export default LevelViewController;
 
-customElements.define('game-board', GameBoardView);
-customElements.define('game-sidebar', GameSidebarView);
 

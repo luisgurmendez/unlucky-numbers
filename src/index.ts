@@ -1,13 +1,20 @@
+import { solve } from "./core/solver";
 import LevelController from "./pages/level/controller";
-import LevelState from "./pages/level/state";
-import LevelViewController from "./pages/level/view";
+import LevelViewController from "./pages/level/views/viewController";
 
 (async function () {
-  const controller = new LevelController();
-  const view = new LevelViewController();
-  view.bindController(controller);
+  function nextLevel() {
+    runLevel();
+  }
 
-  view.render(controller.currentState);
-  controller.subscribe(view.render);
+  function runLevel() {
+    const controller = new LevelController(nextLevel);
+    const view = new LevelViewController();
+    view.bindController(controller);
+    solve(controller.currentState.numbers as number[], controller.currentState.target).then(console.log);
+    view.render(controller.currentState);
+    controller.subscribe(view.render);
+  }
 
-})();
+  nextLevel();
+})(); 

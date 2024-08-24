@@ -68,3 +68,5 @@ class GameSidebarView extends HTMLElement {
 
 
 export default GameSidebarView;
+
+customElements.define('game-sidebar', GameSidebarView);

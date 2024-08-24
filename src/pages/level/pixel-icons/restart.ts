@@ -1,6 +1,6 @@
 import { PixelArt } from "@/core/types"
 
-const value = 0x7c0082010101000100010001020083007f80030002000000000n
+const value = 0x40006003f0046008481008100810081008121006200fc0060002000000n
 const width = 16
 const height = 16
 const cardinality = 2
@@ -9,7 +9,7 @@ const palette = [
   0x000000,
 ]
 
-const undo: PixelArt = [
+const restart: PixelArt = [
   value,
   width,
   height,
@@ -17,5 +17,5 @@ const undo: PixelArt = [
   palette,
 ]
 
-export default undo
+export default restart
 
