@@ -1,32 +1,33 @@
 import SoundEffectController from "@/core/soundController";
 import { Operators, wait } from "@/utils";
-import LevelState, { ShallowState } from "./state";
+import GameState, { ShallowState } from "./state";
 import { LevelBuilder } from './level';
 import { Expression, simplifyExpression } from "@/core/math";
 import createConfettiExpltionCanvas from "./views/confetti";
 
-class LevelController {
+class GameController {
 
-    currentLevel;
+    gameState: GameState;
     timer: number = 0;
     nextLevel: () => void;
     history: StateHistory;
+    destroy?: () => void;
 
     constructor(nextLevel: () => void) {
-        this.currentLevel = LevelBuilder.build();
+        this.gameState = LevelBuilder.build();
         this.nextLevel = nextLevel;
         this.history = new StateHistory(this.currentState.shallowState);
     }
 
     start = async () => {
         SoundEffectController.start();
-        this.currentState.setStartCountdown(3);
-        await wait(1000);
-        this.currentState.setStartCountdown(2);
-        await wait(1000);
-        this.currentState.setStartCountdown(1);
-        await wait(1000);
-        this.currentState.setHasStarted();
+        // this.currentState.setStartCountdown(3);
+        // await wait(1000);
+        // this.currentState.setStartCountdown(2);
+        // await wait(1000);
+        // this.currentState.setStartCountdown(1);
+        // await wait(1000);
+        // this.currentState.setHasStarted();
     }
 
     end = () => {
@@ -41,7 +42,7 @@ class LevelController {
             const expression = this.buildExpression(state.numbers[state.selectedNumberIndex!], state.numbers[index], state.selectedOperator!);
             const result = this.evaluateExpression(expression);
             const hasResultDecimals = (result - Math.floor(result)) !== 0;
-            const resultNumberOrFraction = hasResultDecimals ? expression : result;
+            const resultNumberOrFraction = hasResultDecimals ? simplifyExpression(expression) : result;
             const numbersAfterOperation = state.numbers.slice();
             const indexToUpdate = index > state.selectedNumberIndex! ? state.selectedNumberIndex! : index;
             const indexToRemove = index > state.selectedNumberIndex! ? index : state.selectedNumberIndex!;
@@ -50,7 +51,7 @@ class LevelController {
             state.setNumbers(numbersAfterOperation);
             state.deselectNumber();
             state.deselectOperator();
-            this.pushStateToUndoStack();
+            this.pushStateToHistory();
             if (state.hasWon()) {
                 setTimeout(this.end, 50)
             } else {
@@ -105,15 +106,15 @@ class LevelController {
         }
     }
 
-    private pushStateToUndoStack = () => {
+    private pushStateToHistory = () => {
         this.history.push(this.currentState.shallowState);
     }
 
-    subscribe = (observer: (state: LevelState) => void) => {
+    subscribe = (observer: (state: GameState) => void) => {
         this.currentState.subscribe(observer);
     }
 
-    unsubscribe = (observer: (state: LevelState) => void) => {
+    unsubscribe = (observer: (state: GameState) => void) => {
         this.currentState.unsubscribe(observer);
     }
 
@@ -122,7 +123,7 @@ class LevelController {
     }
 
     get currentState() {
-        return this.currentLevel.state;
+        return this.gameState;
     }
 
     private buildExpression = (a: Expression, b: Expression, operator: Operators): string => {
@@ -137,7 +138,7 @@ class LevelController {
 
 }
 
-export default LevelController;
+export default GameController;
 
 
 class StateHistory {

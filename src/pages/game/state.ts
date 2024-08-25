@@ -1,30 +1,31 @@
 import { Expression } from "@/core/math";
-import { Operators } from "@/utils";
+import { debounce, Operators } from "@/utils";
 
 type StateSubscription<S> = (state: S) => void;
 
-class LevelState {
+class GameState {
     numbers: (number | string)[] = [];
-    target: number = 13;
+    target: number;
     selectedNumberIndex: number | null = null;
     selectedOperator: Operators | null = null;
     hasStarted = false;
     startCountdown = 3;
-    observers: StateSubscription<LevelState>[] = [];
+    observers: StateSubscription<GameState>[] = [];
 
-    constructor(numbers: number[]) {
+    constructor(numbers: number[], target = 13) {
         this.numbers = numbers;
+        this.target = target;
     }
 
-    subscribe(observer: StateSubscription<LevelState>) {
+    subscribe(observer: StateSubscription<GameState>) {
         this.observers.push(observer);
     }
 
-    unsubscribe(observer: StateSubscription<LevelState>) {
+    unsubscribe(observer: StateSubscription<GameState>) {
         this.observers = this.observers.filter(obs => obs !== observer);
     }
 
-    notify = debounce(this.undebouncedNotify, 10);
+    notify = debounce(this.undebouncedNotify, 5);
 
     undebouncedNotify() {
         this.observers.forEach(observer => observer(this));
@@ -92,7 +93,7 @@ class LevelState {
 
 }
 
-export default LevelState;
+export default GameState;
 
 
 export interface ShallowState {
@@ -102,13 +103,4 @@ export interface ShallowState {
     selectedOperator: Operators | null;
     hasStarted: boolean;
     startCountdown: number;
-}
-
-
-function debounce<T extends Function>(fn: T, delay: number): T {
-    let timeout: number;
-    return function (this: any, ...args: any[]) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => fn.apply(this, args), delay) as unknown as number;
-    } as unknown as T;
 }

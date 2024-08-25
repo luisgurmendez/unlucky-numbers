@@ -1,0 +1,25 @@
+.menu-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    width: 100%;
+    height: 100%;
+    gap: 1rem;
+}
+
+.menu-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 4rem;
+    gap: 1rem;
+    background: white;
+}
+
+.menu-content-title {
+    margin-bottom: 3rem;
+    color: black;
+}

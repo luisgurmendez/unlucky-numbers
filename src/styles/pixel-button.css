@@ -15,6 +15,8 @@
     transform: translateY(-4px);
     background: var(--btn-bg);
     transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+    z-index: 2;
+    position: relative;
 }
 
 .pixel-button-text::before {
@@ -56,6 +58,7 @@
     margin-top: 8px;
     cursor: pointer;
     position: relative;
+    z-index: 2;
 }
 
 .pixel-button::after {

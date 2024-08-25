@@ -1,5 +1,11 @@
 
-abstract class ReactiveWebComponent<S extends object> extends HTMLElement {
+type AttributeName<S extends State> = (keyof S)[];
+
+type State = Record<string, any>
+
+
+
+abstract class ReactiveWebComponent<S extends State> extends HTMLElement {
     state: S;
 
     constructor(initialState: S) {
@@ -8,8 +14,11 @@ abstract class ReactiveWebComponent<S extends object> extends HTMLElement {
     }
 
     connectedCallback() {
+        this.init();
         this.render();
     }
+
+    init(): void { };
 
     createReactiveState(obj: S) {
         const component = this;

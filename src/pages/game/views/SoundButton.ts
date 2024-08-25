@@ -4,7 +4,7 @@ import soundMutePixelArt from "@/pixel-art/sound_mute";
 import ReactiveWebComponent from "@/core/ReactiveWebComponent";
 import SoundEffectController from "@/core/soundController";
 
-interface SoundState {
+type SoundState = {
     isMuted: boolean;
 }
 
@@ -21,7 +21,9 @@ class SoundButton extends ReactiveWebComponent<SoundState> {
     }
 
     render() {
-        const soundButton = PixelArtIconButton(this.state.isMuted ? soundPixelArt : soundMutePixelArt, { onClick: this.handleToggleSound });
+        const soundButton = PixelArtIconButton(this.state.isMuted ? soundPixelArt : soundMutePixelArt,
+            { onClick: this.handleToggleSound }
+        );
         this.innerHTML = ``;
         this.appendChild(soundButton);
     }

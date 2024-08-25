@@ -1,5 +1,3 @@
-
-
 interface CardOptions {
     attributes?: Record<string, string>;
     onClick?: (event: MouseEvent) => void;

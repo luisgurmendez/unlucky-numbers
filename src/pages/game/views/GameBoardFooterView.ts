@@ -1,21 +1,16 @@
 import undoPixelArt from "@/pixel-art/undo";
 import redoPixelArt from "@/pixel-art/redo";
-import soundPixelArt from "@/pixel-art/sound";
-import soundMutePixelArt from "@/pixel-art/sound_mute";
 import nextPixelArt from "@/pixel-art/next";
-// import { IconButton } from "./iconButton";
 import { WebComponentsPropsParserHelper } from "@/core/webComponents";
-import LevelController from "../controller";
+import GameController from "../GameController";
 import PixelArtIconButton from "@/ui/pixelArtIconButton";
-import showModal from "@/ui/modal";
-import MenuModal from "./menuModal";
-import SoundButton from "./soundButton";
+import SoundButton from "./SoundButton";
 
 class GameBoardFooterView extends HTMLElement {
 
     isUndoDisabled: boolean = false;
     isRedoDisabled: boolean = false;
-    controller?: LevelController;
+    controller?: GameController;
 
     constructor() {
         super();
@@ -76,7 +71,7 @@ function RedoButton(disabled: boolean) {
     return redoButton;
 }
 
-export function Footer(isUndoDisabled: boolean, isRedoDisabled: boolean, controller?: LevelController) {
+export function Footer(isUndoDisabled: boolean, isRedoDisabled: boolean, controller?: GameController) {
     const gameBoardFooter = document.createElement('div');
     gameBoardFooter.id = 'game-board-footer';
     const redoIcon = RedoButton(isRedoDisabled);

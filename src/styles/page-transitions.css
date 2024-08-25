@@ -1,0 +1,40 @@
+#cube-transition-container {
+    perspective: 200vw;
+    height: 100%;
+    width: 100vw;
+}
+
+.cube {
+    position: relative;
+    height: 100%;
+    width: 100vw;
+    transform-style: preserve-3d;
+}
+
+.face {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    color: #fff;
+    transition: transform 0.6s linear;
+}
+
+
+.cube .side {
+    transform: translateZ(-50vw) rotateY(90deg) translateZ(50vw);
+    transform-origin: center center;
+    background-color: white;
+}
+
+.cube .front {
+    transform: translateZ(-50vw) rotateY(0deg) translateZ(50vw);
+    background-color: lightgray;
+}
+
+.cube .side.flip {
+    transform: translateZ(-50vw) rotateY(0deg) translateZ(50vw);
+}
+
+.cube .front.flip {
+    transform: translateZ(-50vw) rotateY(-90deg) translateZ(50vw);
+}

@@ -1,12 +1,12 @@
 import { WebComponentsPropsParserHelper } from "@/core/webComponents";
-import LevelController from "../controller";
+import GameController from "../GameController";
 import { Operators } from "@/utils";
 
 class GameSidebarView extends HTMLElement {
 
     operators: string[] = [];
     selectedOperator: string | null = null;
-    controller?: LevelController;
+    controller?: GameController;
 
     constructor() {
         super();

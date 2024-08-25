@@ -1,16 +1,15 @@
 import { Expression, simplifyExpression } from "@/core/math";
 import { WebComponentsPropsParserHelper } from "@/core/webComponents";
-import GameBoardFooterView from "./gameBoardFooter";
-import LevelController from "../controller";
+import GameBoardFooterView from "./GameBoardFooterView";
+import GameController from "../GameController";
 import Card from "@/ui/card";
-
 
 class GameBoardView extends HTMLElement {
 
     numbers: Expression[] = [];
     selectedNumberIndex: number | null = null;
     hasWon: boolean = false;
-    controller?: LevelController;
+    controller?: GameController;
 
     constructor() {
         super();
@@ -19,12 +18,15 @@ class GameBoardView extends HTMLElement {
 
     private setLocalAttributes() {
         this.selectedNumberIndex = WebComponentsPropsParserHelper.parseNumber(this.getAttribute('selected-number-index'));
-        const numbers = WebComponentsPropsParserHelper.parseArray(this.getAttribute('numbers'));
+        this.numbers = WebComponentsPropsParserHelper.parseArray(this.getAttribute('numbers'));
         this.hasWon = WebComponentsPropsParserHelper.parseBoolean(this.getAttribute('has-won'));
-        this.numbers = numbers.map((number) => {
-            const isFraction = number.includes('/');
-            return isFraction ? simplifyExpression(number) : parseInt(number, 10);
-        });
+    }
+
+    private haveLocalAttributesChanged(): boolean {
+        const selectedNumberIndex = WebComponentsPropsParserHelper.parseNumber(this.getAttribute('selected-number-index'));
+        const numbers = WebComponentsPropsParserHelper.parseArray(this.getAttribute('numbers'));
+        const hasWon = WebComponentsPropsParserHelper.parseBoolean(this.getAttribute('has-won'));
+        return this.selectedNumberIndex !== selectedNumberIndex || this.numbers.join() !== numbers.join() || this.hasWon !== hasWon;
     }
 
     connectedCallback() {
@@ -40,8 +42,10 @@ class GameBoardView extends HTMLElement {
     }
 
     attributeChangedCallback() {
-        this.setLocalAttributes();
-        this.render();
+        if (this.haveLocalAttributesChanged()) {
+            this.setLocalAttributes();
+            this.render();
+        }
     }
 
     static get observedAttributes(): string[] {

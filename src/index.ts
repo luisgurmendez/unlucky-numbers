@@ -1,20 +1,24 @@
 import { solve } from "./core/solver";
-import LevelController from "./pages/level/controller";
-import LevelViewController from "./pages/level/views/viewController";
+import GameController from "./pages/game/GameController";
+import GameViewController from "./pages/game/views/GameViewController";
+import "./pages/menu/view";
 
-(async function () {
+function instantiateGame(view: GameViewController) {
   function nextLevel() {
-    runLevel();
+    runGame();
   }
 
-  function runLevel() {
-    const controller = new LevelController(nextLevel);
-    const view = new LevelViewController();
+  function runGame() {
+    const controller = new GameController(nextLevel);
     view.bindController(controller);
     solve(controller.currentState.numbers as number[], controller.currentState.target).then(console.log);
+    view.init();
+    controller.start();
     view.render(controller.currentState);
     controller.subscribe(view.render);
   }
 
   nextLevel();
-})(); 
+}
+
+export default instantiateGame;
