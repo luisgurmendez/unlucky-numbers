@@ -1,20 +1,32 @@
 import { Expression } from "@/core/math";
 import { debounce, Operators } from "@/utils";
+import { Level } from "./LevelBuilder";
 
 type StateSubscription<S> = (state: S) => void;
 
 class GameState {
     numbers: (number | string)[] = [];
-    target: number;
+    target!: number;
     selectedNumberIndex: number | null = null;
     selectedOperator: Operators | null = null;
+    operators: Operators[] = [];
     hasStarted = false;
     startCountdown = 3;
     observers: StateSubscription<GameState>[] = [];
 
-    constructor(numbers: number[], target = 13) {
-        this.numbers = numbers;
-        this.target = target;
+    constructor(level: Level) {
+        this.reset(level);
+    }
+
+    reset(level: Level) {
+        this.numbers = level.numbers;
+        this.target = level.target;
+        this.operators = level.operators;
+        this.selectedNumberIndex = null;
+        this.selectedOperator = null;
+        this.hasStarted = false;
+        this.startCountdown = 3;
+        this.notify();
     }
 
     subscribe(observer: StateSubscription<GameState>) {
@@ -25,7 +37,12 @@ class GameState {
         this.observers = this.observers.filter(obs => obs !== observer);
     }
 
-    notify = debounce(this.undebouncedNotify, 5);
+    notify = () => {
+        // When setState is called multiple times we should queue the notifications
+        queueMicrotask(() => {
+            this.observers.forEach(observer => observer(this));
+        })
+    }
 
     undebouncedNotify() {
         this.observers.forEach(observer => observer(this));

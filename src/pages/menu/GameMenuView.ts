@@ -4,6 +4,7 @@ import showModal from "@/ui/modal";
 import TutorialGameViewController from "../game/views/TutorialGameViewController";
 import instantiateGame from "@/index";
 import RandomGameViewController from "../game/views/RandomLevelGameViewController";
+import TutorialViewController from "../game/views/tutorial/TutorialViewController";
 
 class GameMenuView extends HTMLElement {
     constructor() {
@@ -26,12 +27,16 @@ class GameMenuView extends HTMLElement {
         menuContent.appendChild(title);
 
         const tutorialButton = PixelButton('Tutorial', () => {
+            const viewController = new TutorialViewController();
+            instantiateGame(viewController);
+            pageTransition.showGame();
+        });
+
+        const settingsButton = PixelButton('Settings', () => {
             const viewController = new RandomGameViewController();
             instantiateGame(viewController);
             pageTransition.showGame();
-
         });
-        const settingsButton = PixelButton('Settings', () => { });
         const aboutButton = PixelButton('About', () => showModal(PixelButton('Settings', () => { })));
         const exitButton = PixelButton('Exit', () => { });
         menuContent.appendChild(tutorialButton);
@@ -47,3 +52,6 @@ class GameMenuView extends HTMLElement {
 customElements.define('game-menu-view', GameMenuView);
 
 export default GameMenuView;
+
+
+

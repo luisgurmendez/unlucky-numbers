@@ -1,5 +1,5 @@
-import GameState from "../GameState";
-import GameViewController from "./GameViewController";
+import GameState from "../../GameState";
+import GameViewController from "../GameViewController";
 
 class RandomGameViewController extends GameViewController {
 

@@ -4,7 +4,7 @@ interface CardOptions {
     className?: string;
 }
 
-function Card(children: HTMLElement | string, opts: CardOptions): HTMLDivElement {
+function Card(children: HTMLElement | string, opts: CardOptions = {}): HTMLDivElement {
     const card = document.createElement('div');
     card.className = `card pixelated-border ${opts.className ?? ''}`;
     if (opts.onClick) {

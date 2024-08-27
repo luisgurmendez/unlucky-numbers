@@ -13,4 +13,8 @@ export class WebComponentsPropsParserHelper {
     static parseBoolean = (value: string | null): boolean => {
         return value === 'true';
     }
+
+    static parseString = (value: string | null): string | null => {
+        return value;
+    }
 }

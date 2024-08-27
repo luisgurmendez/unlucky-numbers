@@ -1,7 +1,7 @@
 import SoundEffectController from "@/core/soundController";
 import { Operators, wait } from "@/utils";
-import GameState, { ShallowState } from "./state";
-import { LevelBuilder } from './level';
+import GameState, { ShallowState } from "./GameState";
+import { Level, LevelBuilder } from './LevelBuilder';
 import { Expression, simplifyExpression } from "@/core/math";
 import createConfettiExpltionCanvas from "./views/confetti";
 
@@ -9,25 +9,39 @@ class GameController {
 
     gameState: GameState;
     timer: number = 0;
-    nextLevel: () => void;
     history: StateHistory;
     destroy?: () => void;
+    levels: Level[];
+    currentLevelIndex: number = 0;
 
-    constructor(nextLevel: () => void) {
-        this.gameState = LevelBuilder.build();
-        this.nextLevel = nextLevel;
-        this.history = new StateHistory(this.currentState.shallowState);
+    constructor(levels: Level[]) {
+        this.levels = levels;
+        const level = this.levels[this.currentLevelIndex];
+        this.gameState = new GameState(level);
+        this.history = new StateHistory(this.gameState.shallowState);
     }
 
     start = async () => {
         SoundEffectController.start();
-        // this.currentState.setStartCountdown(3);
+        // this.gameState.setStartCountdown(3);
         // await wait(1000);
-        // this.currentState.setStartCountdown(2);
+        // this.gameState.setStartCountdown(2);
         // await wait(1000);
-        // this.currentState.setStartCountdown(1);
+        // this.gameState.setStartCountdown(1);
         // await wait(1000);
-        // this.currentState.setHasStarted();
+        // this.gameState.setHasStarted();
+    }
+
+    nextLevel = () => {
+        this.currentLevelIndex++;
+        if (this.currentLevelIndex < this.levels.length) {
+            const level = this.levels[this.currentLevelIndex];
+            this.gameState.reset(level);
+            this.history = new StateHistory(this.gameState.shallowState);
+        } else {
+            console.log('FINISHED!');
+        }
+
     }
 
     end = () => {
@@ -37,7 +51,7 @@ class GameController {
     }
 
     selectNumber = (index: number) => {
-        const state = this.currentState;
+        const state = this.gameState;
         if (this.isReadyToEvaluateExpression() && state.selectedNumberIndex !== index) {
             const expression = this.buildExpression(state.numbers[state.selectedNumberIndex!], state.numbers[index], state.selectedOperator!);
             const result = this.evaluateExpression(expression);
@@ -53,7 +67,7 @@ class GameController {
             state.deselectOperator();
             this.pushStateToHistory();
             if (state.hasWon()) {
-                setTimeout(this.end, 50)
+                queueMicrotask(this.end)
             } else {
                 SoundEffectController.pop();
             }
@@ -70,15 +84,15 @@ class GameController {
     }
 
     hasWon = () => {
-        return this.currentState.numbers.length === 1 && this.currentState.numbers[0] === 13;
+        return this.gameState.numbers.length === 1 && this.gameState.numbers[0] === 13;
     }
 
     private isReadyToEvaluateExpression = (): boolean => {
-        return this.currentState.selectedNumberIndex !== null && this.currentState.selectedOperator !== null;
+        return this.gameState.selectedNumberIndex !== null && this.gameState.selectedOperator !== null;
     }
 
     selectOperator = (operator: Operators) => {
-        const state = this.currentState;
+        const state = this.gameState;
         if (state.selectedNumberIndex !== null) {
             if (state.selectedOperator === operator) {
                 SoundEffectController.select();
@@ -94,7 +108,7 @@ class GameController {
         const prevState = this.history.undo();
         if (prevState !== null) {
             SoundEffectController.unselect();
-            this.currentState.setState(prevState);
+            this.gameState.setState(prevState);
         }
     }
 
@@ -102,28 +116,24 @@ class GameController {
         const nextState = this.history.redo();
         if (nextState !== null) {
             SoundEffectController.select();
-            this.currentState.setState(nextState);
+            this.gameState.setState(nextState);
         }
     }
 
     private pushStateToHistory = () => {
-        this.history.push(this.currentState.shallowState);
+        this.history.push(this.gameState.shallowState);
     }
 
     subscribe = (observer: (state: GameState) => void) => {
-        this.currentState.subscribe(observer);
+        this.gameState.subscribe(observer);
     }
 
     unsubscribe = (observer: (state: GameState) => void) => {
-        this.currentState.unsubscribe(observer);
+        this.gameState.unsubscribe(observer);
     }
 
     get isSolved() {
         return false;
-    }
-
-    get currentState() {
-        return this.gameState;
     }
 
     private buildExpression = (a: Expression, b: Expression, operator: Operators): string => {

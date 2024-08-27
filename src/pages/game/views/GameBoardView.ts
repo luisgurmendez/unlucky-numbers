@@ -33,14 +33,6 @@ class GameBoardView extends HTMLElement {
         this.render();
     }
 
-    attachEventListeners() {
-        const cards = document.getElementsByClassName("number-card");
-        Array.from(cards).forEach((e) => e.addEventListener("click", async () => {
-            const cardNumber = e.getAttribute("data-number-index");
-            this.controller?.selectNumber(Number(cardNumber));
-        }));
-    }
-
     attributeChangedCallback() {
         if (this.haveLocalAttributesChanged()) {
             this.setLocalAttributes();
@@ -74,22 +66,27 @@ class GameBoardView extends HTMLElement {
             const cards = this.numbers.map((number, index) => {
                 return Card(number.toString(), {
                     className: `number-card ${this.selectedNumberIndex === index ? 'selected' : ''}`,
-                    attributes: { 'data-number-index': index.toString() }
+                    attributes: { 'data-number-index': index.toString(), 'data-number': number.toString() },
+                    onClick: () => {
+                        this.controller?.selectNumber(index);
+                    }
                 });
             });
             cards.forEach((card) => {
                 gameBoardContent.appendChild(card);
             });
 
-            const footerTemplate = document.createElement('template');
-            footerTemplate.innerHTML = `<game-board-footer is-undo-disabled="${!this.controller?.history.canUndo()}" is-redo-disabled="${!this.controller?.history.canRedo()}"></game-board-footer>`;
+
+            const footer = document.createElement('game-board-footer');
+            footer.setAttribute('is-undo-disabled', String(!this.controller?.history.canUndo()));
+            footer.setAttribute('is-redo-disabled', String(!this.controller?.history.canRedo()));
+
             gameBoard.appendChild(gameBoardContent);
-            gameBoard.appendChild(footerTemplate.content.childNodes[0]);
+            gameBoard.appendChild(footer);
         }
 
         this.innerHTML = ``;
         this.appendChild(gameBoard);
-        this.attachEventListeners();
     }
 }
 

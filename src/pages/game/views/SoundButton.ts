@@ -1,7 +1,7 @@
 import PixelArtIconButton from "@/ui/pixelArtIconButton";
 import soundPixelArt from "@/pixel-art/sound";
 import soundMutePixelArt from "@/pixel-art/sound_mute";
-import ReactiveWebComponent from "@/core/ReactiveWebComponent";
+import ReactiveWebComponent from "@/core/StatefulWebComponent";
 import SoundEffectController from "@/core/soundController";
 
 type SoundState = {

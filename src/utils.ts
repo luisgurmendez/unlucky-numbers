@@ -10,6 +10,11 @@ export enum Operators {
     DIVIDE = '/'
 }
 
+
+export function isOperator(value: string): value is Operators {
+    return Object.keys(Operators).includes(value);
+}
+
 export function debounce<T extends Function>(fn: T, delay: number): T {
     let timeout: number;
     return function (this: any, ...args: any[]) {

@@ -1,45 +1,54 @@
-import GameState from "../GameState";
-import GameViewController from "./GameViewController";
+import GameViewController from "../GameViewController";
 import showModal from "@/ui/modal";
 import nextPixelArt from "@/pixel-art/next";
-import TutorialHandView from "./tutorial/TutorialHand";
+import TutorialHandView from "./TutorialHand";
 import ReactiveWebComponent from "@/core/StatefulWebComponent";
 import PixelArtIconButton from "@/ui/pixelArtIconButton";
 import PlainButton from "@/ui/plain_button";
+import GameState from "../../GameState";
+import TutorialGameController from "./TutorialGameController";
+import { isOperator, Operators } from "@/utils";
 
-const levels = [
-    {
-        numbers: [10, 3],
-        target: 13,
-        operators: ['+', '-'],
-        targets: ['10', '+', '3']
-    },
-    {
-        numbers: [6, 1, 2, 3],
-        target: 13,
-        operators: ['+', '-', '*'],
-        targets: ['6', '-', '1', '5', '*', '2', '10', '+', '3',]
-    },
-    {
-        numbers: [11, 3, 6, 3],
-        target: 13,
-        operators: ['+', '-', '*', '/'],
-        targets: ['11', '*', '3', '33', '+', '6', '39', '/', '3']
-    }
-]
 
+type Hint = string | Operators | typeof UndoSymbol;
+const UndoSymbol = Symbol('Undo');
 
 class TutorialGameViewController extends GameViewController {
     tutorialHand: TutorialHandView;
     tutorialExplanationButton: HTMLElement;
+    header: HTMLElement;
+    // controller: TutorialGameController;
 
     constructor() {
         super();
         this.tutorialHand = new TutorialHandView();
-        showModal(document.createElement('tutorial-modal-description'));
+        console.log(this.tutorialHand);
         this.tutorialExplanationButton = PlainButton('i', {
             onClick: () => showModal(document.createElement('tutorial-modal-description'))
         });
+        this.header = document.createElement('div');
+        this.header.id = 'game-board-header';
+        this.header.slot = 'game-board-header-slot';
+        // this.controller = controller;
+    }
+
+
+    setHint = (hint: Hint | null) => {
+        if (hint === UndoSymbol) {
+            const undoButton = document.querySelector<HTMLElement>('#undo-button')!;
+            this.tutorialHand.setTarget(undoButton);
+        } else if (hint === null) {
+            this.tutorialHand.setTarget(null)
+        } else {
+            if (isOperator(hint)) {
+                const operator = document.querySelector<HTMLElement>(`.card [data-operator="${hint}"]`)!;
+                this.tutorialHand.setTarget(operator);
+            } else {
+                const firstCard = document.querySelector(`.number-card [data-number="${hint}"]`);
+                this.tutorialHand.setTarget(firstCard as HTMLElement);
+            }
+
+        }
     }
 
     update = (state: GameState) => {
@@ -58,8 +67,10 @@ class TutorialGameViewController extends GameViewController {
 
     render = () => {
         const root = document.getElementById('root')!;
-
+        this.header.appendChild(this.tutorialExplanationButton);
+        // this.gameContainer.appendChild(this.header);
         this.gameContainer.appendChild(this.gameBoard);
+
         this.gameContainer.appendChild(this.tutorialHand);
         this.gameContainer.appendChild(this.gameSidebar);
 

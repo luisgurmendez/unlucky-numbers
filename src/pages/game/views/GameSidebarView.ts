@@ -1,6 +1,7 @@
 import { WebComponentsPropsParserHelper } from "@/core/webComponents";
 import GameController from "../GameController";
 import { Operators } from "@/utils";
+import Card from "@/ui/card";
 
 class GameSidebarView extends HTMLElement {
 
@@ -14,8 +15,7 @@ class GameSidebarView extends HTMLElement {
     }
 
     private setLocalAttributes() {
-        const operators = WebComponentsPropsParserHelper.parseArray(this.getAttribute('operators'));
-        this.operators = operators;
+        this.operators = WebComponentsPropsParserHelper.parseArray(this.getAttribute('operators'));
         this.selectedOperator = this.getAttribute('selected-operator');
     }
 
@@ -32,37 +32,28 @@ class GameSidebarView extends HTMLElement {
         return ['operators', 'selected-operator'];
     }
 
-    attachEventListeners() {
-        const operators = document.getElementsByClassName("operator");
-        Array.from(operators).forEach((e) => e.addEventListener("click", async () => {
-            const operator = e.getAttribute("data-operator");
-            this.controller?.selectOperator(operator as Operators);
-        }));
-    }
-
     render() {
         const gameSidebar = document.createElement('div');
         gameSidebar.id = 'game-sidebar';
 
         const cards = this.operators.map((operator) => {
-            const card = document.createElement('div');
-            card.className = `operator card pixelated-border ${this.selectedOperator === operator ? 'selected' : ''}`;
-            card.setAttribute('data-operator', operator);
-            card.innerHTML = `
-                <div class="card-element">
-                    ${operator}
-                </div>
-            `;
+
+            const card = Card(operator, {
+                className: `operator ${this.selectedOperator === operator ? 'selected' : ''}`,
+                attributes: {
+                    'data-operator': operator,
+                },
+                onClick: () => {
+                    this.controller?.selectOperator(operator as Operators);
+                }
+            });
             return card;
         });
 
-        cards.forEach((card) => {
-            gameSidebar.appendChild(card);
-        });
 
         this.innerHTML = ``;
+        cards.forEach(card => gameSidebar.appendChild(card));
         this.appendChild(gameSidebar);
-        this.attachEventListeners();
     }
 }
 

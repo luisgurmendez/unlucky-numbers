@@ -1,11 +1,7 @@
 
-type AttributeName<S extends State> = (keyof S)[];
-
 type State = Record<string, any>
 
-
-
-abstract class ReactiveWebComponent<S extends State> extends HTMLElement {
+abstract class StatefulWebComponent<S extends State> extends HTMLElement {
     state: S;
 
     constructor(initialState: S) {
@@ -36,4 +32,4 @@ abstract class ReactiveWebComponent<S extends State> extends HTMLElement {
     abstract render(): void;
 }
 
-export default ReactiveWebComponent;
+export default StatefulWebComponent;
